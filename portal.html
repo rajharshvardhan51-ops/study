@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InternIQ Academy — Study & Certification Portal</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- Share the main app stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+  
+  <style>
+    /* Portal Specific Extensions */
+    .portal-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    
+    .course-card {
+      display: flex;
+      flex-direction: column;
+      min-height: 280px;
+    }
+    .course-card .desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin: 12px 0 20px;
+      flex: 1;
+    }
+    
+    /* Lesson Layout */
+    .study-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 30px;
+      height: calc(100vh - 170px);
+    }
+    .lesson-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow-y: auto;
+    }
+    .lesson-link {
+      padding: 12px 16px;
+      background: rgba(255, 111, 0, 0.01);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      text-align: left;
+      transition: var(--transition-fast);
+    }
+    .lesson-link:hover, .lesson-link.active {
+      border-color: var(--border-active);
+      color: var(--accent);
+      background: var(--panel-hover);
+    }
+    .lesson-link.active {
+      font-weight: 700;
+    }
+    
+    .lesson-content-panel {
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      padding-right: 10px;
+    }
+    .lesson-body {
+      font-size: 14.5px;
+      line-height: 1.8;
+      color: var(--text-muted);
+    }
+    .lesson-body h2 {
+      font-family: var(--font-display);
+      font-size: 22px;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+    .lesson-body p {
+      margin-bottom: 16px;
+    }
+    .lesson-body pre {
+      background: rgba(255, 111, 0, 0.02);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--accent);
+      overflow-x: auto;
+      margin-bottom: 20px;
+      white-space: pre-wrap;
+    }
+    
+    /* Interactive quiz inside lessons */
+    .lesson-quiz-box {
+      margin-top: 30px;
+      padding: 20px;
+      background: rgba(255, 111, 0, 0.02);
+      border: 1px solid var(--border-active);
+      border-radius: var(--radius-md);
+    }
+    .lesson-quiz-box h4 {
+      font-family: var(--font-display);
+      font-size: 15px;
+      margin-bottom: 12px;
+      color: var(--accent);
+    }
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .quiz-opt {
+      padding: 10px 14px;
+      background: var(--panel-bg-solid);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      cursor: pointer;
+      text-align: left;
+      transition: var(--transition-fast);
+    }
+    .quiz-opt:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .quiz-opt.correct {
+      background: var(--green-bg);
+      border-color: var(--green);
+      color: var(--green);
+      font-weight: 600;
+    }
+    .quiz-opt.incorrect {
+      background: var(--red-bg);
+      border-color: var(--red);
+      color: var(--red);
+    }
+    
+    /* Exam Screen Layout */
+    .exam-hud {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 20px;
+      background: rgba(255, 111, 0, 0.02);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      margin-bottom: 24px;
+    }
+    .exam-timer {
+      font-family: var(--font-mono);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .exam-question-card {
+      min-height: 240px;
+      margin-bottom: 24px;
+    }
+    .exam-question-text {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    .exam-options-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .exam-option-btn {
+      padding: 16px 20px;
+      background: rgba(255, 111, 0, 0.01);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      color: var(--text);
+      cursor: pointer;
+      text-align: left;
+      transition: var(--transition-fast);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .exam-option-btn:hover {
+      border-color: var(--accent);
+      background: var(--panel-hover);
+    }
+    .exam-option-btn.selected {
+      border-color: var(--accent);
+      background: var(--accent-bg);
+      font-weight: 600;
+    }
+    .option-letter {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(255,111,0,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    
+    .exam-footer-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .exam-progress-tracker {
+      display: flex;
+      gap: 8px;
+    }
+    .tracker-dot {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-dark);
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+    .tracker-dot.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-bg);
+    }
+    .tracker-dot.answered {
+      background: rgba(255, 111, 0, 0.05);
+      border-color: var(--border-active);
+      color: var(--accent);
+    }
+    
+    /* Certificate Canvas Preview */
+    .certificate-view-grid {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 30px;
+      align-items: start;
+    }
+    .canvas-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+      background: #fdfdfd;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+    }
+    #certificate-canvas {
+      border: 1px solid #ddd;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+      max-width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background WebGL starfield -->
+  <canvas id="canvas3d" class="bg-canvas"></canvas>
+
+  <!-- Notification -->
+  <div id="notif" class="notif-toast">
+    <span class="notif-icon" id="notif-icon">✅</span>
+    <span id="notif-msg">Welcome to Academy!</span>
+  </div>
+
+  <div class="shell">
+    
+    <!-- SIDEBAR NAV -->
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="logo-text">Intern<span>IQ</span></div>
+        <div class="logo-sub">Academy Center</div>
+      </div>
+      <nav class="nav">
+        <div class="nav-section">Navigation</div>
+        <button class="nav-item" onclick="window.location.href='index.html'">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Back to Dashboard
+        </button>
+        
+        <div class="nav-section">Academy Rooms</div>
+        <button class="nav-item active" id="tab-btn-courses" onclick="switchTab('courses')">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+          Study Courses
+        </button>
+        <button class="nav-item" id="tab-btn-exams" onclick="switchTab('exams')">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9l2 2 4-4"/></svg>
+          MCQ Certification
+        </button>
+        <button class="nav-item" id="tab-btn-certificates" onclick="switchTab('certificates')">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Your Certificates
+        </button>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <div class="api-status">
+          <div class="status-dot active"></div>
+          Academy Active
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN PORTAL WINDOW -->
+    <main class="main">
+      
+      <header class="topbar">
+        <h1 class="topbar-title" id="portal-title">Study Courses</h1>
+        <div class="topbar-actions">
+          <div class="audio-control" onclick="toggleAudio()">
+            <svg id="audio-icon" class="audio-on" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+          </div>
+          <div class="user-badge">
+            <span class="user-avatar">🎓</span>
+            <span id="header-student-name">Student Account</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- VIEW PAGES -->
+
+      <!-- VIEW: COURSES LIST -->
+      <div class="page active" id="view-courses">
+        <div class="portal-grid" id="courses-grid-container">
+          <!-- Python Card -->
+          <div class="course-card glass-card fade-up">
+            <div class="badge badge-purple">Data Science</div>
+            <h3 style="margin-top: 12px; font-family:var(--font-display)">Python &amp; ML Basics</h3>
+            <p class="desc">Master data processing using Numpy, DataFrame filters in Pandas, and model evaluations in Scikit-Learn.</p>
+            <button class="btn btn-primary btn-block" onclick="openStudyCourse('python')">📖 Read Lessons</button>
+          </div>
+          <!-- React Card -->
+          <div class="course-card glass-card fade-up delay-1">
+            <div class="badge badge-green">Frontend</div>
+            <h3 style="margin-top: 12px; font-family:var(--font-display)">React.js Fundamentals</h3>
+            <p class="desc">Learn Virtual DOM manipulation, props/state pipelines, and hook methods including useState and useEffect.</p>
+            <button class="btn btn-primary btn-block" onclick="openStudyCourse('react')">📖 Read Lessons</button>
+          </div>
+          <!-- Node Card -->
+          <div class="course-card glass-card fade-up delay-2">
+            <div class="badge badge-blue">Backend</div>
+            <h3 style="margin-top: 12px; font-family:var(--font-display)">Node &amp; Express APIs</h3>
+            <p class="desc">Configure event loop environments, build robust routing middlewares, and design modular HTTP endpoints.</p>
+            <button class="btn btn-primary btn-block" onclick="openStudyCourse('node')">📖 Read Lessons</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW: STUDY LESSONS READER -->
+      <div class="page" id="view-study-reader">
+        <div style="margin-bottom: 20px;">
+          <button class="btn btn-ghost" onclick="switchTab('courses')">← Back to Courses</button>
+        </div>
+        <div class="study-layout">
+          <!-- Sidebar lesson outline -->
+          <div class="lesson-sidebar glass-card" id="study-sidebar-outline">
+            <!-- Dynamic lesson list -->
+          </div>
+          <!-- Main reader -->
+          <div class="lesson-content-panel glass-card">
+            <div class="lesson-body" id="study-lesson-viewer">
+              <!-- Render text here -->
+            </div>
+            
+            <!-- Quick Quiz check inside lesson -->
+            <div class="lesson-quiz-box" id="study-lesson-quiz">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW: EXAMS LIST -->
+      <div class="page" id="view-exams">
+        <div class="portal-grid">
+          <!-- Python Exam Card -->
+          <div class="course-card glass-card fade-up">
+            <div class="badge badge-purple">5 Questions</div>
+            <h3 style="margin-top: 12px; font-family:var(--font-display)">Python &amp; ML Certification</h3>
+            <p class="desc">Topics: Numpy vectors, Pandas indexes, MSE, Scikit-learn test splits. Passing score: 70%.</p>
+            <button class="btn btn-primary btn-block" onclick="startCourseExam('python')">✍️ Start Exam (10m)</button>
+          </div>
+          <!-- React Exam Card -->
+          <div class="course-card glass-card fade-up delay-1">
+            <div class="badge badge-green">5 Questions</div>
+            <h3 style="margin-top: 12px; font-family:var(--font-display)">React.js Certification</h3>
+            <p class="desc">Topics: Virtual DOM, props updates, rendering keys, hook dependencies. Passing score: 70%.</p>
+            <button class="btn btn-primary btn-block" onclick="startCourseExam('react')">✍️ Start Exam (10m)</button>
+          </div>
+          <!-- Node Exam Card -->
+          <div class="course-card glass-card fade-up delay-2">
+            <div class="badge badge-blue">5 Questions</div>
+            <h3 style="margin-top: 12px; font-family:var(--font-display)">Node &amp; Express Certification</h3>
+            <p class="desc">Topics: Middlewares, status codes, req.body parsing, event cycles. Passing score: 70%.</p>
+            <button class="btn btn-primary btn-block" onclick="startCourseExam('node')">✍️ Start Exam (10m)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW: ACTIVE EXAM MCQ SHEET -->
+      <div class="page" id="view-exam-runner">
+        <!-- Live HUD with Timer -->
+        <div class="exam-hud glass-card fade-up">
+          <div>
+            <h3 id="exam-runner-title" style="font-family:var(--font-display)">React.js Certification Exam</h3>
+            <p id="exam-runner-subtitle" style="font-size:12px;color:var(--text-muted);margin-top:2px;">Question <span id="exam-curr-num">1</span> of 5</p>
+          </div>
+          <div class="exam-timer" id="exam-timer-clock">10:00</div>
+        </div>
+        
+        <!-- Question sheet -->
+        <div class="glass-card exam-question-card fade-up delay-1">
+          <div class="exam-question-text" id="exam-question-text">
+            What is the purpose of the key prop when rendering lists in React?
+          </div>
+          <div class="exam-options-grid" id="exam-options-container">
+            <!-- Dynamic MCQ options buttons -->
+          </div>
+        </div>
+        
+        <!-- Control buttons -->
+        <div class="exam-footer-bar fade-up delay-2">
+          <div class="exam-progress-tracker" id="exam-question-tracker-dots">
+            <!-- Tracker dots -->
+          </div>
+          <div style="display:flex;gap:12px;">
+            <button class="btn btn-ghost" id="exam-prev-btn" onclick="prevExamQuestion()">Previous</button>
+            <button class="btn btn-primary" id="exam-next-btn" onclick="nextExamQuestion()">Next</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW: EXAM SCORE SUMMARY -->
+      <div class="page" id="view-exam-result">
+        <div class="glass-card fade-up" style="max-width: 600px; margin: 0 auto; text-align: center; padding: 40px;">
+          <div id="result-status-icon" style="font-size: 56px; margin-bottom: 16px;">🏆</div>
+          <h2 id="result-title" style="font-family:var(--font-display); font-size:28px;">Exam Completed!</h2>
+          <p id="result-subtitle" style="color:var(--text-muted); margin-top:8px;">You passed the React certification exam.</p>
+          
+          <div class="hud-score-display" style="max-width: 180px; margin: 24px auto;">
+            <div class="score-large" id="result-score-val">80%</div>
+            <div class="score-lbl">Your Score</div>
+          </div>
+          
+          <div id="result-certificate-alert" style="margin-bottom: 24px;">
+            <!-- Added to profile message -->
+          </div>
+          
+          <div style="display:flex;gap:12px;justify-content:center;">
+            <button class="btn btn-ghost" onclick="switchTab('courses')">Course Directory</button>
+            <button class="btn btn-primary" id="result-cert-btn" onclick="switchTab('certificates')">🎖 View Certificate</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW: EARNED CERTIFICATES -->
+      <div class="page" id="view-certificates">
+        <div class="certificate-view-grid">
+          
+          <!-- Left side: Certificate Preview Canvas -->
+          <div class="canvas-container glass-card fade-up">
+            <canvas id="certificate-canvas" width="800" height="550"></canvas>
+          </div>
+          
+          <!-- Right side: Selection list & Actions -->
+          <div class="certificates-sidebar">
+            <div class="glass-card fade-up delay-1" style="margin-bottom: 20px;">
+              <h3>Earned Credentials</h3>
+              <p style="font-size:12.5px;color:var(--text-muted);margin-bottom:15px;line-height:1.5;">Pass certification exams to earn shareable credentials and add key technical attributes directly to your matching profile.</p>
+              <div class="history-list" id="certificates-list-log">
+                <p class="empty-msg">No certificates earned yet. Pass an exam to unlock certificates!</p>
+              </div>
+            </div>
+            
+            <div class="glass-card fade-up delay-2">
+              <h3>Credential Actions</h3>
+              <button class="btn btn-primary btn-block" onclick="downloadCertificatePNG()">💾 Download PNG Image</button>
+              <button class="btn btn-ghost btn-block" style="margin-top: 10px;" onclick="window.location.href='index.html'">⚡ Return to Match Dashboard</button>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- CDN scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  
+  <!-- Shared modules -->
+  <script src="js/audio.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/three-visualizer.js"></script>
+  
+  <!-- Academy specific logic -->
+  <script src="js/portal.js"></script>
+</body>
+</html>
